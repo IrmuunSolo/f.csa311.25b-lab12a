@@ -5,29 +5,44 @@ import java.util.Arrays;
 public class GameState {
 
     private final Cell[] cells;
+    private final String currentPlayer;
+    private final String winner;
 
-    private GameState(Cell[] cells) {
+    private GameState(Cell[] cells, String currentPlayer, String winner) {
         this.cells = cells;
+        this.currentPlayer = currentPlayer;
+        this.winner = winner;
     }
 
     public static GameState forGame(Game game) {
         Cell[] cells = getCells(game);
-        return new GameState(cells);
+        String currentPlayer = game.getPlayer() == Player.PLAYER0 ? "X" : "O";
+        Player winner = game.getWinner();
+        String winnerText = winner == null ? "" : (winner == Player.PLAYER0 ? "X" : "O");
+        return new GameState(cells, currentPlayer, winnerText);
     }
 
     public Cell[] getCells() {
         return this.cells;
     }
 
-    /**
-     * toString() of GameState will return the string representing
-     * the GameState in JSON format.
-     */
+    public String getCurrentPlayer() {
+        return currentPlayer;
+    }
+
+    public String getWinner() {
+        return winner;
+    }
+
     @Override
     public String toString() {
         return """
-                { "cells": %s}
-                """.formatted(Arrays.toString(this.cells));
+                { 
+                    "cells": %s,
+                    "currentPlayer": "%s",
+                    "winner": "%s"
+                }
+                """.formatted(Arrays.toString(this.cells), this.currentPlayer, this.winner);
     }
 
     private static Cell[] getCells(Game game) {
@@ -42,7 +57,7 @@ public class GameState {
                     text = "X";
                 else if (player == Player.PLAYER1)
                     text = "O";
-                else if (player == null) {
+                else if (player == null && game.getWinner() == null) {
                     playable = true;
                 }
                 cells[3 * y + x] = new Cell(x, y, text, playable);

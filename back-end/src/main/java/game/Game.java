@@ -32,6 +32,17 @@ public class Game {
         this.history = history;
     }
 
+    public Game undo() {
+        if (this.history.isEmpty()) {
+            return this;
+        }
+        // Get the last state from history
+        Game lastGame = this.history.get(this.history.size() - 1);
+        // Create a new game with the last state's board and player, but with the history excluding the last move
+        return new Game(lastGame.getBoard(), lastGame.getPlayer(), 
+                      this.history.subList(0, this.history.size() - 1));
+    }   
+
     public Board getBoard() {
         return this.board;
     }
